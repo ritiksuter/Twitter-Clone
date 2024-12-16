@@ -1,0 +1,46 @@
+version: "latest"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    container_name: react-container
+    environment:
+      - WATCHPACK_POLLING=true
+    networks:
+      - mern-stack
+    volumes:
+      - frontend-logs:/app
+    depends_on:
+      - backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    container_name: express-container
+    networks:
+      - mern-stack
+    volumes:
+      - backend-logs:/app/logs
+    depends_on:
+      - database
+  database:
+    image: mongo
+    ports:
+      - "27017:27017"
+    container_name: database-container
+    networks:
+      - mern-stack
+    volumes:
+      - mongoData:/data/db
+networks:
+  mern-stack:
+    driver: bridge
+volumes:
+  mongoData:
+  backend-logs:
+  frontend-logs:
